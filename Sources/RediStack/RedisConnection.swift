@@ -18,6 +18,7 @@ import Logging
 import Metrics
 import NIO
 import NIOConcurrencyHelpers
+import NIOSSL
 
 extension RedisConnection {
     
@@ -57,7 +58,20 @@ extension RedisConnection {
         
         var future = client
             .connect(to: config.address)
-            .map { return RedisConnection(configuredRESPChannel: $0, context: config.defaultLogger) }
+            .flatMap { channel -> EventLoopFuture<RedisConnection> in
+                if config.sslMode ?? false {
+                    var tlsConfiguration: TLSConfiguration = TLSConfiguration.makeClientConfiguration()
+                    tlsConfiguration.certificateVerification = .none
+                    if let sslContext = try? NIOSSLContext(configuration: tlsConfiguration) {
+                        if let handler = try? NIOSSLClientHandler(context: sslContext, serverHostname: config.hostname) {
+                            return channel.pipeline.addHandlers([handler], position: .first).map { _ in
+                                RedisConnection(configuredRESPChannel: channel, context: config.defaultLogger)
+                            }
+                        }
+                    }
+                }
+                return eventLoop.makeSucceededFuture(RedisConnection(configuredRESPChannel: channel, context: config.defaultLogger))
+            }
 
         // if a password is specified, use it to authenticate before further operations happen
         if let password = config.password {
