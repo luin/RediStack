@@ -86,6 +86,8 @@ extension RedisConnection {
         /// The logger prototype that will be used by the connection by default when generating logs.
         public let defaultLogger: Logger
         
+        public let sslMode: Bool?
+        
         internal let address: SocketAddress
         
         /// Creates a new connection configuration with the provided details.
@@ -101,7 +103,8 @@ extension RedisConnection {
             address: SocketAddress,
             password: String? = nil,
             initialDatabase: Int? = nil,
-            defaultLogger: Logger? = nil
+            defaultLogger: Logger? = nil,
+            sslMode: Bool? = false
         ) throws {
             if initialDatabase != nil && initialDatabase! < 0 {
                 throw ValidationError.outOfBoundsDatabaseID
@@ -111,6 +114,7 @@ extension RedisConnection {
             self.password = password
             self.initialDatabase = initialDatabase
             self.defaultLogger = defaultLogger ?? Configuration.defaultLogger
+            self.sslMode = sslMode
         }
 
         /// Creates a new connection configuration with exact details.
