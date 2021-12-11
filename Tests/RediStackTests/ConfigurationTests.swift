@@ -33,7 +33,23 @@ final class ConfigurationTests: XCTestCase {
         XCTAssertEqual(configuration.port, 6666)
         XCTAssertEqual(configuration.initialDatabase, 1)
     }
-    
+  
+  func test_connectionConfiguration_sslModeComponents() throws {
+      let configuration = try RedisConnection.Configuration(hostname: "localhost", sslMode: true, sslClientCertificateFilePath: "/cert", sslPrivateKeyFilePath: "/key")
+      XCTAssertEqual(configuration.hostname, "localhost")
+      XCTAssertEqual(configuration.sslMode, true)
+      XCTAssertEqual(configuration.sslClientCertificateFilePath, "/cert")
+      XCTAssertEqual(configuration.sslPrivateKeyFilePath, "/key")
+  }
+
+  func test_connectionConfiguration_full() throws {
+      let configuration = try RedisConnection.Configuration(hostname: "localhost", port: 6379, password: nil, initialDatabase: nil, defaultLogger: nil, sslMode: true, sslClientCertificateFilePath: "/cert", sslPrivateKeyFilePath: "/key")
+      XCTAssertEqual(configuration.hostname, "localhost")
+      XCTAssertEqual(configuration.sslMode, true)
+      XCTAssertEqual(configuration.sslClientCertificateFilePath, "/cert")
+      XCTAssertEqual(configuration.sslPrivateKeyFilePath, "/key")
+  }
+
     func test_connectionConfiguration_databaseIndex() throws {
         let address = try SocketAddress.makeAddressResolvingHost("localhost", port: RedisConnection.Configuration.defaultPort)
         XCTAssertThrowsError(try RedisConnection.Configuration(address: address, initialDatabase: -1)) {
