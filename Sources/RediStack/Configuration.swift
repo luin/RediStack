@@ -15,6 +15,7 @@
 import Foundation
 import Logging
 import NIO
+import NIOSSL
 
 extension RedisConnection.Configuration {
     public struct ValidationError: LocalizedError, Equatable {
@@ -87,8 +88,8 @@ extension RedisConnection {
         public let defaultLogger: Logger
         
         public let sslMode: Bool?
-        public let sslClientCertificateFilePath: String?
-        public let sslPrivateKeyFilePath: String?
+        public let sslClientCertificate: [UInt8]?
+        public let sslPrivateKey: NIOSSLPrivateKey?
         
         internal let address: SocketAddress
         
@@ -107,8 +108,8 @@ extension RedisConnection {
             initialDatabase: Int? = nil,
             defaultLogger: Logger? = nil,
             sslMode: Bool? = false,
-            sslClientCertificateFilePath: String? = nil,
-            sslPrivateKeyFilePath: String? = nil
+            sslClientCertificate: [UInt8]? = nil,
+            sslPrivateKey: NIOSSLPrivateKey? = nil
         ) throws {
             if initialDatabase != nil && initialDatabase! < 0 {
                 throw ValidationError.outOfBoundsDatabaseID
@@ -119,8 +120,8 @@ extension RedisConnection {
             self.initialDatabase = initialDatabase
             self.defaultLogger = defaultLogger ?? Configuration.defaultLogger
             self.sslMode = sslMode
-            self.sslClientCertificateFilePath = sslClientCertificateFilePath
-            self.sslPrivateKeyFilePath = sslPrivateKeyFilePath
+            self.sslClientCertificate = sslClientCertificate
+            self.sslPrivateKey = sslPrivateKey
         }
 
         /// Creates a new connection configuration with exact details.
@@ -142,8 +143,8 @@ extension RedisConnection {
             initialDatabase: Int? = nil,
             defaultLogger: Logger? = nil,
             sslMode: Bool? = false,
-            sslClientCertificateFilePath: String? = nil,
-            sslPrivateKeyFilePath: String? = nil
+            sslClientCertificate: [UInt8]? = nil,
+            sslPrivateKey: NIOSSLPrivateKey? = nil
         ) throws {
             try self.init(
                 address: try .makeAddressResolvingHost(hostname, port: port),
@@ -151,8 +152,8 @@ extension RedisConnection {
                 initialDatabase: initialDatabase,
                 defaultLogger: defaultLogger,
                 sslMode: sslMode,
-                sslClientCertificateFilePath: sslClientCertificateFilePath,
-                sslPrivateKeyFilePath: sslPrivateKeyFilePath
+                sslClientCertificate: sslClientCertificate,
+                sslPrivateKey: sslPrivateKey
             )
         }
 

@@ -62,12 +62,12 @@ extension RedisConnection {
                 if config.sslMode ?? false {
                     var tlsConfiguration: TLSConfiguration = TLSConfiguration.makeClientConfiguration()
                   
-                    if let certificatePath = config.sslClientCertificateFilePath, let certificate = try? NIOSSLCertificate.fromPEMFile(certificatePath) {
+                    if let bytes = config.sslClientCertificate, let certificate = try? NIOSSLCertificate.fromPEMBytes(bytes) {
                       tlsConfiguration.certificateChain = certificate.map { .certificate($0) }
                     }
                   
-                    if let privateKeyPath = config.sslPrivateKeyFilePath {
-                        tlsConfiguration.privateKey = .file(privateKeyPath)
+                    if let privateKey = config.sslPrivateKey {
+                      tlsConfiguration.privateKey = .privateKey(privateKey)
                     }
                   
                     tlsConfiguration.certificateVerification = .none
