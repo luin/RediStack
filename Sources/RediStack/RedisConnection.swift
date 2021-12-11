@@ -61,6 +61,15 @@ extension RedisConnection {
             .flatMap { channel -> EventLoopFuture<RedisConnection> in
                 if config.sslMode ?? false {
                     var tlsConfiguration: TLSConfiguration = TLSConfiguration.makeClientConfiguration()
+                  
+                    if let certificatePath = config.sslClientCertificateFilePath, let certificate = try? NIOSSLCertificate.fromPEMFile(certificatePath) {
+                      tlsConfiguration.certificateChain = certificate.map { .certificate($0) }
+                    }
+                  
+                    if let privateKeyPath = config.sslPrivateKeyFilePath {
+                        tlsConfiguration.privateKey = .file(privateKeyPath)
+                    }
+                  
                     tlsConfiguration.certificateVerification = .none
                     if let sslContext = try? NIOSSLContext(configuration: tlsConfiguration) {
                         if let handler = try? NIOSSLClientHandler(context: sslContext, serverHostname: config.hostname) {

@@ -87,6 +87,8 @@ extension RedisConnection {
         public let defaultLogger: Logger
         
         public let sslMode: Bool?
+        public let sslClientCertificateFilePath: String?
+        public let sslPrivateKeyFilePath: String?
         
         internal let address: SocketAddress
         
@@ -104,7 +106,9 @@ extension RedisConnection {
             password: String? = nil,
             initialDatabase: Int? = nil,
             defaultLogger: Logger? = nil,
-            sslMode: Bool? = false
+            sslMode: Bool? = false,
+            sslClientCertificateFilePath: String? = nil,
+            sslPrivateKeyFilePath: String? = nil
         ) throws {
             if initialDatabase != nil && initialDatabase! < 0 {
                 throw ValidationError.outOfBoundsDatabaseID
@@ -115,6 +119,8 @@ extension RedisConnection {
             self.initialDatabase = initialDatabase
             self.defaultLogger = defaultLogger ?? Configuration.defaultLogger
             self.sslMode = sslMode
+            self.sslClientCertificateFilePath = sslClientCertificateFilePath
+            self.sslPrivateKeyFilePath = sslPrivateKeyFilePath
         }
 
         /// Creates a new connection configuration with exact details.
@@ -135,14 +141,18 @@ extension RedisConnection {
             password: String? = nil,
             initialDatabase: Int? = nil,
             defaultLogger: Logger? = nil,
-            sslMode: Bool? = false
+            sslMode: Bool? = false,
+            sslClientCertificateFilePath: String? = nil,
+            sslPrivateKeyFilePath: String? = nil
         ) throws {
             try self.init(
                 address: try .makeAddressResolvingHost(hostname, port: port),
                 password: password,
                 initialDatabase: initialDatabase,
                 defaultLogger: defaultLogger,
-                sslMode: sslMode
+                sslMode: sslMode,
+                sslClientCertificateFilePath: sslClientCertificateFilePath,
+                sslPrivateKeyFilePath: sslPrivateKeyFilePath
             )
         }
 
