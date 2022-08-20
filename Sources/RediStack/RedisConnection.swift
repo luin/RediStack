@@ -74,7 +74,7 @@ extension RedisConnection {
                     if let sslContext = try? NIOSSLContext(configuration: tlsConfiguration) {
                         if let handler = try? NIOSSLClientHandler(context: sslContext, serverHostname: config.hostname) {
                             return channel.pipeline.addHandlers([handler], position: .first).map { _ in
-                                RedisConnection(configuredRESPChannel: channel, context: config.defaultLogger)
+                              RedisConnection(configuredRESPChannel: channel, defaultLogger: config.defaultLogger)
                             }
                         }
                     }
@@ -405,9 +405,10 @@ extension RedisConnection {
         logger: Logger? = nil,
         messageReceiver receiver: @escaping RedisSubscriptionMessageReceiver,
         onSubscribe subscribeHandler: RedisSubscribeHandler?,
-        onUnsubscribe unsubscribeHandler: RedisUnsubscribeHandler?
+        onUnsubscribe unsubscribeHandler: RedisUnsubscribeHandler?,
+        onError errorHandler: RedisPubSubErrorHandler?
     ) -> EventLoopFuture<Void> {
-        return self._subscribe(.channels(channels), receiver, subscribeHandler, unsubscribeHandler, eventLoop, logger)
+        return self._subscribe(.channels(channels), receiver, subscribeHandler, unsubscribeHandler, errorHandler, eventLoop, logger)
     }
 
     public func psubscribe(
@@ -416,9 +417,10 @@ extension RedisConnection {
         logger: Logger? = nil,
         messageReceiver receiver: @escaping RedisSubscriptionMessageReceiver,
         onSubscribe subscribeHandler: RedisSubscribeHandler? = nil,
-        onUnsubscribe unsubscribeHandler: RedisUnsubscribeHandler? = nil
+        onUnsubscribe unsubscribeHandler: RedisUnsubscribeHandler? = nil,
+        onError errorHandler: RedisPubSubErrorHandler? = nil
     ) -> EventLoopFuture<Void> {
-        return self._subscribe(.patterns(patterns), receiver, subscribeHandler, unsubscribeHandler, eventLoop, logger)
+        return self._subscribe(.patterns(patterns), receiver, subscribeHandler, unsubscribeHandler, errorHandler, eventLoop, logger)
     }
 
     private func _subscribe(
@@ -426,6 +428,7 @@ extension RedisConnection {
         _ receiver: @escaping RedisSubscriptionMessageReceiver,
         _ onSubscribe: RedisSubscribeHandler?,
         _ onUnsubscribe: RedisUnsubscribeHandler?,
+        _ onError: RedisPubSubErrorHandler?,
         _ eventLoop: EventLoop?,
         _ logger: Logger?
     ) -> EventLoopFuture<Void> {
@@ -455,7 +458,7 @@ extension RedisConnection {
                 .flatMap { handler in
                     logger.trace("handler added, adding subscription")
                     return handler
-                        .addSubscription(for: target, messageReceiver: receiver, onSubscribe: onSubscribe, onUnsubscribe: onUnsubscribe)
+                    .addSubscription(for: target, messageReceiver: receiver, onSubscribe: onSubscribe, onUnsubscribe: onUnsubscribe, onError: onError)
                         .flatMapError { error in
                             logger.debug(
                                 "failed to add subscriptions that triggered pubsub mode. removing handler",
@@ -484,7 +487,7 @@ extension RedisConnection {
         
         // add the subscription and just ignore the subscription count
         return handler
-            .addSubscription(for: target, messageReceiver: receiver, onSubscribe: onSubscribe, onUnsubscribe: onUnsubscribe)
+            .addSubscription(for: target, messageReceiver: receiver, onSubscribe: onSubscribe, onUnsubscribe: onUnsubscribe, onError: onError)
             .map { _ in logger.trace("subscription added") }
             .hop(to: finalEventLoop)
     }

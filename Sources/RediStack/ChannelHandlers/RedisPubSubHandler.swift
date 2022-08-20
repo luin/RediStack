@@ -63,6 +63,8 @@ public enum RedisUnsubscribeEventSource {
 ///     - source: The source of the unsubscribe event.
 public typealias RedisUnsubscribeHandler = (_ details: RedisSubscriptionChangeDetails, _ source: RedisUnsubscribeEventSource) -> Void
 
+public typealias RedisPubSubErrorHandler = (_ error: Error) -> Void
+
 /// A list of patterns or channels that a Pub/Sub subscription change is targetting.
 ///
 /// See `RedisChannelName`, [PSUBSCRIBE](https://redis.io/commands/psubscribe) and [SUBSCRIBE](https://redis.io/commands/subscribe)
@@ -235,7 +237,8 @@ extension RedisPubSubHandler {
         for target: RedisSubscriptionTarget,
         messageReceiver receiver: @escaping RedisSubscriptionMessageReceiver,
         onSubscribe subscribeHandler: RedisSubscribeHandler?,
-        onUnsubscribe unsubscribeHandler: RedisUnsubscribeHandler?
+        onUnsubscribe unsubscribeHandler: RedisUnsubscribeHandler?,
+        onError errorHandler: RedisPubSubErrorHandler?
     ) -> EventLoopFuture<Int> {
         guard self.eventLoop.inEventLoop else {
             return self.eventLoop.flatSubmit {
@@ -243,7 +246,8 @@ extension RedisPubSubHandler {
                     for: target,
                     messageReceiver: receiver,
                     onSubscribe: subscribeHandler,
-                    onUnsubscribe: unsubscribeHandler
+                    onUnsubscribe: unsubscribeHandler,
+                    onError: errorHandler
                 )
             }
         }
@@ -264,7 +268,8 @@ extension RedisPubSubHandler {
                         type: target.subscriptionType,
                         messageReceiver: receiver,
                         subscribeHandler: subscribeHandler,
-                        unsubscribeHandler: unsubscribeHandler
+                        unsubscribeHandler: unsubscribeHandler,
+                        errorHandler: errorHandler
                     )
                     let prefixedKey = self.prefixKey(targetKey, with: target.keyPrefix)
                     guard self.subscriptions.updateValue(subscription, forKey: prefixedKey) == nil else { return nil }
@@ -425,6 +430,11 @@ extension RedisPubSubHandler: ChannelInboundHandler {
             let channelOrPattern = array[1].string,
             let messageKeyword = array[0].string
         else {
+          if let error = value.error {
+            self.subscriptions.enumerated().forEach {
+              $0.element.value.onError?(error)
+            }
+          }
             context.fireChannelRead(data)
             return
         }
@@ -550,17 +560,20 @@ extension RedisPubSubHandler {
         let onMessage: RedisSubscriptionMessageReceiver
         var onSubscribe: RedisSubscribeHandler? // will be set to nil after first call
         let onUnsubscribe: RedisUnsubscribeHandler?
+        let onError: RedisPubSubErrorHandler?
         
         init(
             type: SubscriptionType,
             messageReceiver: @escaping RedisSubscriptionMessageReceiver,
             subscribeHandler: RedisSubscribeHandler?,
-            unsubscribeHandler: RedisUnsubscribeHandler?
+            unsubscribeHandler: RedisUnsubscribeHandler?,
+            errorHandler: RedisPubSubErrorHandler?
         ) {
             self.type = type
             self.onMessage = messageReceiver
             self.onSubscribe = subscribeHandler
-            self.onUnsubscribe = unsubscribeHandler
+          self.onUnsubscribe = unsubscribeHandler
+          self.onError = errorHandler
         }
     }
 
