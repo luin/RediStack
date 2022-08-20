@@ -2,7 +2,7 @@
 //
 // This source file is part of the RediStack open source project
 //
-// Copyright (c) 2020 RediStack project authors
+// Copyright (c) 2020-2022 RediStack project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -12,6 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import struct Logging.Logger
 import NIO
 
 // MARK: Server
@@ -37,12 +38,19 @@ extension RedisCommand {
 extension RedisClient {
     /// Swaps the data of two Redis databases by their index IDs.
     ///
-    /// See `RedisCommand.swapdb(_:with:)`
+    /// See ``RedisCommand/swapdb(_:with:)``
     /// - Parameters:
     ///     - first: The index of the first database.
     ///     - second: The index of the second database.
+    ///     - eventLoop: An optional event loop to hop to for any further chaining on the returned event loop future.
+    ///     - logger: An optional logger instance to use for logs generated from this command.
     /// - Returns: A `NIO.EventLoopFuture` that resolves `true` if the command succeed or `false` if it didn't.
-    public func swapDatabase(_ first: Int, with second: Int) -> EventLoopFuture<Bool> {
-        return self.send(.swapdb(first, with: second))
+    public func swapDatabase(
+        _ first: Int,
+        with second: Int,
+        eventLoop: EventLoop? = nil,
+        logger: Logger? = nil
+    ) -> EventLoopFuture<Bool> {
+        return self.send(.swapdb(first, with: second), eventLoop: eventLoop, logger: logger)
     }
 }

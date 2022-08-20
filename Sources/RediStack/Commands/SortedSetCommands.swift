@@ -2,7 +2,7 @@
 //
 // This source file is part of the RediStack open source project
 //
-// Copyright (c) 2019 RediStack project authors
+// Copyright (c) 2019-2022 RediStack project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -12,6 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import struct Logging.Logger
 import NIO
 
 // MARK: Sorted Sets
@@ -367,7 +368,7 @@ extension RedisCommand {
     /// - Precondition: A `ClosedRange` cannot be created where `upperBound` is less than `lowerBound`; so while Redis may support `0...-1`,
     ///     `ClosedRange` will trigger a precondition failure.
     ///
-    ///     If you need such a range, use `zrange(from:firstIndex:lastIndex:resultOption:)` instead.
+    ///     If you need such a range, use ``zrange(from:firstIndex:lastIndex:resultOption:)`` instead.
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
     /// For the inverse, see `zrevrange(from:indices:returning:)`.
@@ -388,7 +389,7 @@ extension RedisCommand {
     /// - Precondition: A `Range` cannot be created where `upperBound` is less than `lowerBound`; so while Redis may support `0..<(-1)`,
     ///     `Range` will trigger a precondition failure.
     ///
-    ///     If you need such a range, use `zrange(from:firstIndex:lastIndex:)` instead.
+    ///     If you need such a range, use ``zrange(from:firstIndex:lastIndex:)`` instead.
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
     /// For the inverse, see `zrevrange(from:indices:returning:)`.
@@ -408,7 +409,7 @@ extension RedisCommand {
     /// [ZRANGE](https://redis.io/commands/zrange)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrange(from:fromIndex:returning:)`.
+    /// For the inverse, see ``zrevrange(from:fromIndex:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - index: The index of the first element that will be in the returned values.
@@ -425,7 +426,7 @@ extension RedisCommand {
     /// [ZRANGE](https://redis.io/commands/zrange)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrange(from:throughIndex:returning:)`.
+    /// For the inverse, see ``zrevrange(from:throughIndex:returning:)`.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - index: The index of the last element that will be in the returned values.
@@ -442,7 +443,7 @@ extension RedisCommand {
     /// [ZRANGE](https://redis.io/commands/zrange)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrange(from:upToIndex:returning:)`.
+    /// For the inverse, see ``zrevrange(from:upToIndex:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - index: The index of the last element to not include in the returned values.
@@ -460,7 +461,7 @@ extension RedisCommand {
     /// - Warning: This assumes all elements in the SortedSet have the same score. If not, the returned elements are unspecified.
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebylex(from:withValuesBetween:limitBy:)`.
+    /// For the inverse, see ``zrevrangebylex(from:withValuesBetween:limitBy:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet that will be counted.
     ///     - range: The min and max value bounds for filtering elements by.
@@ -478,7 +479,7 @@ extension RedisCommand {
     /// - Warning: This assumes all elements in the SortedSet have the same score. If not, the returned elements are unspecified.
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebylex(from:withMinimumValueOf:limitBy:)`.
+    /// For the inverse, see ``zrevrangebylex(from:withMinimumValueOf:limitBy:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - minValue: The minimum lexiographical value an element in the SortedSet should have to be included in the result set.
@@ -496,7 +497,7 @@ extension RedisCommand {
     /// - Warning: This assumes all elements in the SortedSet have the same score. If not, the returned elements are unspecified.
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebylex(from:withMaximumValueOf:limitBy:)`.
+    /// For the inverse, see ``zrevrangebylex(from:withMaximumValueOf:limitBy:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - minValue: The maximum lexiographical value an element in the SortedSet should have to be included in the result set.
@@ -514,7 +515,7 @@ extension RedisCommand {
     /// - Warning: This assumes all elements in the SortedSet have the same score. If not, the returned elements are unspecified.
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebylex(from:withValuesBetween:limitBy:)`.
+    /// For the inverse, see ``zrangebylex(from:withValuesBetween:limitBy:)`.
     /// - Parameters:
     ///     - key: The key of the SortedSet that will be counted.
     ///     - range: The min and max value bounds for filtering elements by.
@@ -532,7 +533,7 @@ extension RedisCommand {
     /// - Warning: This assumes all elements in the SortedSet have the same score. If not, the returned elements are unspecified.
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebylex(from:withMinimumValueOf:limitBy:)`.
+    /// For the inverse, see ``zrangebylex(from:withMinimumValueOf:limitBy:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - minValue: The minimum lexiographical value an element in the SortedSet should have to be included in the result set.
@@ -550,7 +551,7 @@ extension RedisCommand {
     /// - Warning: This assumes all elements in the SortedSet have the same score. If not, the returned elements are unspecified.
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebylex(from:withMaximumValueOf:limitBy:)`.
+    /// For the inverse, see ``zrangebylex(from:withMaximumValueOf:limitBy:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - minValue: The maximum lexiographical value an element in the SortedSet should have to be included in the result set.
@@ -567,7 +568,7 @@ extension RedisCommand {
     /// [ZRANGEBYSCORE](https://redis.io/commands/zrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebyscore(from:withScoresBetween:limitBy:returning:)`.
+    /// For the inverse, see ``zrevrangebyscore(from:withScoresBetween:limitBy:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The min and max score bounds to filter elements by.
@@ -586,7 +587,7 @@ extension RedisCommand {
     /// [ZRANGEBYSCORE](https://redis.io/commands/zrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebyscore(from:withScores:limitBy:returning:)`.
+    /// For the inverse, see ``zrevrangebyscore(from:withScores:limitBy:returning:)-2vp67``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The inclusive range of scores to filter elements by.
@@ -610,7 +611,7 @@ extension RedisCommand {
     /// [ZRANGEBYSCORE](https://redis.io/commands/zrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebyscore(from:withScores:limitBy:returning:)`.
+    /// For the inverse, see ``zrevrangebyscore(from:withScores:limitBy:returning:)-3jdpl``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: A range with an inclusive lower and exclusive upper bound of scores to filter elements by.
@@ -634,7 +635,7 @@ extension RedisCommand {
     /// [ZRANGEBYSCORE](https://redis.io/commands/zrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebyscore(from:withMinimumScoreOf:limitBy:returning:)`.
+    /// For the inverse, see ``zrevrangebyscore(from:withMinimumScoreOf:limitBy:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The minimum score bound an element in the SortedSet should have to be included in the response.
@@ -658,7 +659,7 @@ extension RedisCommand {
     /// [ZRANGEBYSCORE](https://redis.io/commands/zrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **low** to **high**.
     ///
-    /// For the inverse, see `zrevrangebyscore(from:withMaximumScoreOf:limitBy:returning:)`.
+    /// For the inverse, see ``zrevrangebyscore(from:withMaximumScoreOf:limitBy:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The maximum score bound an element in the SortedSet should have to be included in the response.
@@ -682,7 +683,7 @@ extension RedisCommand {
     /// [ZRANK](https://redis.io/commands/zrank)
     /// - Important: This treats the ordered set as ordered from low to high.
     ///
-    /// For the inverse, see `zrevrank(of:in:)`.
+    /// For the inverse, see ``zrevrank(of:in:)``.
     /// - Parameters:
     ///     - element: The element in the sorted set to search for.
     ///     - key: The key of the sorted set to search.
@@ -773,7 +774,7 @@ extension RedisCommand {
     /// - Precondition: A `ClosedRange` cannot be created where `upperBound` is less than `lowerBound`; so while Redis may support `0...-1`,
     ///     `ClosedRange` will trigger a precondition failure.
     ///
-    ///     If you need such a range, use `zremrangebyrank(from:firstIndex:lastIndex:)` instead.
+    ///     If you need such a range, use ``zremrangebyrank(from:firstIndex:lastIndex:)`` instead.
     /// - Parameters:
     ///     - key: The key of the SortedSet to remove elements from.
     ///     - range: The range of inclusive indices of elements to remove.
@@ -785,7 +786,7 @@ extension RedisCommand {
     /// - Precondition: A `Range` cannot be created where `upperBound` is less than `lowerBound`; so while Redis may support `0...-1`,
     ///     `Range` will trigger a precondition failure.
     ///
-    ///     If you need such a range, use `zremrangebyrank(from:firstIndex:lastIndex:)` instead.
+    ///     If you need such a range, use ``zremrangebyrank(from:firstIndex:lastIndex:)`` instead.
     /// - Parameters:
     ///     - key: The key of the SortedSet to remove elements from.
     ///     - range: The range of indices (inclusive lower, exclusive upper) elements to remove.
@@ -869,7 +870,7 @@ extension RedisCommand {
     /// [ZREVRANGE](https://redis.io/commands/zrevrange)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrange(from:firstIndex:lastIndex:returning:)`.
+    /// For the inverse, see ``zrange(from:firstIndex:lastIndex:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet
     ///     - firstIndex: The index of the first element to include in the range of elements returned.
@@ -887,10 +888,10 @@ extension RedisCommand {
     /// - Precondition: A `ClosedRange` cannot be created where `upperBound` is less than `lowerBound`; so while Redis may support `0...-1`,
     ///     `ClosedRange` will trigger a precondition failure.
     ///
-    ///     If you need such a range, use `zrevrange(from:firstIndex:lastIndex:)` instead.
+    ///     If you need such a range, use ``zrevrange(from:firstIndex:lastIndex:)`` instead.
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrange(from:indices:returning:)`.
+    /// For the inverse, see ``zrange(from:indices:returning:)-95y9o``.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - range: The range of inclusive indices of elements to get.
@@ -906,10 +907,10 @@ extension RedisCommand {
     /// - Precondition: A `Range` cannot be created where `upperBound` is less than `lowerBound`; so while Redis may support `0..<(-1)`,
     ///     `Range` will trigger a precondition failure.
     ///
-    ///     If you need such a range, use `zrevrange(from:firstIndex:lastIndex:)` instead.
+    ///     If you need such a range, use ``zrevrange(from:firstIndex:lastIndex:)`` instead.
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrange(from:indices:returning:)`.
+    /// For the inverse, see ``zrange(from:indices:returning:)-4pd8n``.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - range: The range of indices (inclusive lower, exclusive upper) elements to get.
@@ -924,7 +925,7 @@ extension RedisCommand {
     /// [ZREVRANGE](https://redis.io/commands/zrevrange)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrange(from:fromIndex:returning:)`.
+    /// For the inverse, see ``zrange(from:fromIndex:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - index: The index of the first element that will be in the returned values.
@@ -939,7 +940,7 @@ extension RedisCommand {
     /// [ZREVRANGE](https://redis.io/commands/zrevrange)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrange(from:throughIndex:returning:)`.
+    /// For the inverse, see ``zrange(from:throughIndex:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - index: The index of the last element that will be in the returned values.
@@ -954,7 +955,7 @@ extension RedisCommand {
     /// [ZREVRANGE](https://redis.io/commands/zrevrange)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrange(from:upToIndex:returning:)`.
+    /// For the inverse, see ``zrange(from:upToIndex:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet to return elements from.
     ///     - index: The index of the last element to not include in the returned values.
@@ -969,7 +970,7 @@ extension RedisCommand {
     /// [ZREVRANGEBYSCORE](https://redis.io/commands/zrevrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebyscore(from:withScoresBetween:limitBy:returning:)`.
+    /// For the inverse, see ``zrangebyscore(from:withScoresBetween:limitBy:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The min and max score bounds to filter elements by.
@@ -988,7 +989,7 @@ extension RedisCommand {
     /// [ZREVRANGEBYSCORE](https://redis.io/commands/zrevrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebyscore(from:withScores:limitBy:returning:)`.
+    /// For the inverse, see ``zrangebyscore(from:withScores:limitBy:returning:)-phw``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The inclusive range of scores to filter elements by.
@@ -1012,7 +1013,7 @@ extension RedisCommand {
     /// [ZREVRANGEBYSCORE](https://redis.io/commands/zrevrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebyscore(from:withScores:limitBy:returning:)`.
+    /// For the inverse, see ``zrangebyscore(from:withScores:limitBy:returning:)-4ukbv``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: A range with an inclusive lower and exclusive upper bound of scores to filter elements by.
@@ -1036,7 +1037,7 @@ extension RedisCommand {
     /// [ZREVRANGEBYSCORE](https://redis.io/commands/zrevrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebyscore(from:withMinimumScoreOf:limitBy:returning:)`.
+    /// For the inverse, see ``zrangebyscore(from:withMinimumScoreOf:limitBy:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The minimum score bound an element in the SortedSet should have to be included in the response.
@@ -1060,7 +1061,7 @@ extension RedisCommand {
     /// [ZREVRANGEBYSCORE](https://redis.io/commands/zrevrangebyscore)
     /// - Important: This treats the SortedSet as ordered from **high** to **low**.
     ///
-    /// For the inverse, see `zrangebyscore(from:withMaximumScoreOf:limitBy:returning:)`.
+    /// For the inverse, see ``zrangebyscore(from:withMaximumScoreOf:limitBy:returning:)``.
     /// - Parameters:
     ///     - key: The key of the SortedSet.
     ///     - range: The maximum score bound an element in the SortedSet should have to be included in the response.
@@ -1084,7 +1085,7 @@ extension RedisCommand {
     /// [ZREVRANK](https://redis.io/commands/zrevrank)
     /// - Important: This treats the ordered set as ordered from high to low.
     ///
-    /// For the inverse, see `zrank(of:in:)`.
+    /// For the inverse, see ``zrank(of:in:)``.
     /// - Parameters:
     ///     - element: The element in the sorted set to search for.
     ///     - key: The key of the sorted set to search.
@@ -1148,21 +1149,25 @@ extension RedisCommand {
 extension RedisClient {
     /// Incrementally iterates over all elements in a sorted set.
     ///
-    /// See `RedisCommand.zscan(_:startingFrom:matching:count:)`
+    /// See ``RedisCommand/zscan(_:startingFrom:matching:count:)``
     /// - Parameters:
     ///     - key: The key identifying the sorted set.
     ///     - position: The position to start the scan from.
     ///     - match: A glob-style pattern to filter values to be selected from the result set.
     ///     - count: The number of elements to advance by. Redis default is 10.
+    ///     - eventLoop: An optional event loop to hop to for any further chaining on the returned event loop future.
+    ///     - logger: An optional logger instance to use for logs generated from this command.
     /// - Returns: A `NIO.EventLoopFuture` that resolves a cursor position for additional scans,
     ///     with a limited collection of elements with their scores found in the Sorted Set.
     public func scanSortedSetValues(
         in key: RedisKey,
         startingFrom position: Int = 0,
         matching match: String? = nil,
-        count: Int? = nil
+        count: Int? = nil,
+        eventLoop: EventLoop? = nil,
+        logger: Logger? = nil
     ) -> EventLoopFuture<(Int, [(RESPValue, Double)])> {
-        return self.send(.zscan(key, startingFrom: position, matching: match, count: count))
+        return self.send(.zscan(key, startingFrom: position, matching: match, count: count), eventLoop: eventLoop, logger: logger)
     }
 }
 
@@ -1172,7 +1177,7 @@ extension RedisClient {
 ///
 /// `zadd` normally inserts all given elements into the SortedSet, updating the score of any element that already exist in the set.
 ///
-/// However, it other behaviors are available: [ZADD Options](https://redis.io/commands/zadd#zadd-options).
+/// See [ZADD Options](https://redis.io/commands/zadd#zadd-options).
 public struct RedisZaddInsertBehavior {
     /// Insert new elements and update the score of existing elements.
     public static let allElements = RedisZaddInsertBehavior(nil)

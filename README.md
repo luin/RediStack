@@ -4,13 +4,13 @@
 <p>
     <a href="https://github.com/swift-server/sswg/blob/master/process/incubation.md#sandbox-level"><img src="https://img.shields.io/badge/sswg-sandbox-lightgrey.svg" alt="SSWG Maturity"></a>
     <a href="https://gitlab.com/Mordil/RediStack/blob/master/LICENSE.txt"><img src="https://img.shields.io/badge/License-Apache%202.0-yellow.svg" alt="Apache 2 License"></a>
-    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-5.2+-orange.svg" alt="Swift 5.2+"></a>
+    <a href="https://swift.org"><img src="https://img.shields.io/badge/Swift-5.5+-orange.svg" alt="Swift 5.5+"></a>
     <a href="https://redis.io"><img src="https://img.shields.io/badge/Redis-5.0-red.svg" alt="Redis 5.0"></a>
 </p>
 
 <p>
     <a href="https://gitlab.com/Mordil/RediStack/pipelines"><img src="https://gitlab.com/Mordil/RediStack/badges/master/pipeline.svg" alt="Build Status"></a>
-    <a href="https://docs.redistack.info"><img src="https://docs.redistack.info/badge.svg" alt="Documentation Coverage"></a>
+    <a href="https://swiftpackageindex.com/Mordil/RediStack/master/documentation/redistack"><img src="https://img.shields.io/badge/SPI-Documentation-blue.svg" alt="Documentation Coverage"></a>
     <a href="https://codeclimate.com/github/Mordil/RediStack/maintainability"><img src="https://api.codeclimate.com/v1/badges/b6fd5e7a3e669165a21b/maintainability" /></a>
 </p>
 </div>
@@ -77,7 +77,7 @@ print(result) // Optional("some value")
 
 ## Documentation
 
-The docs for the latest tagged release are always available at [docs.redistack.info](http://docs.redistack.info).
+The docs for the latest tagged release are always available from the [Swift Package Index](https://swiftpackageindex.com/Mordil/RediStack/master/documentation/redistack).
 
 ## Questions
 
@@ -124,15 +124,17 @@ This policy is to balance the desire for as much backwards compatibility as poss
 The following table shows the combination of Swift language versions and operating systems that
 receive regular unit testing (either in development, or with CI) against the **current version** of **RediStack**.
 
-| Platform              | Swift 5.3 | 5.4 | 5.5 | Trunk |
-|:----------------------|:---------:|:---:|:---:|:-----:|
-| macOS Latest (Intel)  |    |   | ✅ |    |
-| Ubuntu 20.04 (Focal)  | ✅ | ✅ | ✅ | ✅ |
-| Ubuntu 18.04 (Bionic) | ✅ | ✅ | ✅ | ✅ |
-| Ubuntu 16.04 (Xenial) | ✅ | ✅ | ✅ | ✅ |
-| Amazon Linux 2        | ✅ | ✅ | ✅ | ✅ |
-| CentOS 8              | ✅ | ✅ | ✅ | ✅ |
-| CentOS 7              | ✅ | ✅ | ✅ | ✅ |
+| Platform                    | Swift 5.5 | 5.6 | 5.7 | Trunk |
+|:----------------------------|:---------:|:---:|:---:|:-----:|
+| macOS Latest (M1)           |    |   | ✅ |    |
+| Ubuntu 20.04 (Focal)        | ✅ | ✅ | ✅ | ✅ |
+| Ubuntu 18.04 (Bionic)       | ✅ | ✅ | ✅ | ✅ |
+| Ubuntu 16.04 (Xenial)**³**  | ✅ | ❌ | ❌ | ❌ |
+| Amazon Linux 2              | ✅ | ✅ | ✅ | ✅ |
+| CentOS 8**³**               | ✅ | ❌ | ❌ | ❌ |
+| CentOS 7                    | ✅ | ✅ | ✅ | ✅ |
+
+> **³** _CentOS 8 and Ubuntu 16.04 are no longer officially supported by Swift after [Swift 5.5](https://github.com/apple/swift-docker/pull/273)._
 
 For older versions of **RediStack**, view each summary below.
 

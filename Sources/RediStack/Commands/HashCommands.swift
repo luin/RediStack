@@ -2,7 +2,7 @@
 //
 // This source file is part of the RediStack open source project
 //
-// Copyright (c) 2019-2020 RediStack project authors
+// Copyright (c) 2019-2022 RediStack project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -12,6 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import struct Logging.Logger
 import NIO
 
 // MARK: Hashes
@@ -148,7 +149,7 @@ extension RedisCommand {
     }
 
     /// [HSET](https://redis.io/commands/hset)
-    /// - Note: If you do not want to overwrite existing values, use `hsetnx(_:field:to:)`.
+    /// - Note: If you do not want to overwrite existing values, use ``hsetnx(_:to:in:)``.
     /// - Parameters:
     ///     - field: The key of the field in the hash being set.
     ///     - value: The value the hash field should be set to.
@@ -168,7 +169,7 @@ extension RedisCommand {
     }
 
     /// [HSETNX](https://redis.io/commands/hsetnx)
-    /// - Note: If you do not care about overwriting existing values, use `hset(_:field:to:)`.
+    /// - Note: If you do not care about overwriting existing values, use ``hset(_:to:in:)``.
     /// - Parameters:
     ///     - field: The key of the field in the hash being set.
     ///     - value: The value the hash field should be set to.
@@ -231,22 +232,25 @@ extension RedisCommand {
 extension RedisClient {
     /// Incrementally iterates over all fields in a hash.
     ///
-    /// See `RedisCommand.hscan(_:startingFrom:matching:count:)`
+    /// See ``RedisCommand/hscan(_:startingFrom:matching:count:)``
     /// - Parameters:
     ///     - key: The key of the hash.
     ///     - position: The position to start the scan from.
     ///     - match: A glob-style pattern to filter values to be selected from the result set.
     ///     - count: The number of elements to advance by. Redis default is 10.
-    ///     - valueType: The type to cast all values to.
+    ///     - eventLoop: An optional event loop to hop to for any further chaining on the returned event loop future.
+    ///     - logger: An optional logger instance to use for logs generated from this command.
     /// - Returns: A `NIO.EventLoopFuture` that resolves a cursor position for additional scans,
     ///     with a limited collection of fields and their associated values that were iterated over.
     public func scanHashFields(
         in key: RedisKey,
         startingFrom position: Int = 0,
         matching match: String? = nil,
-        count: Int? = nil
+        count: Int? = nil,
+        eventLoop: EventLoop? = nil,
+        logger: Logger? = nil
     ) -> EventLoopFuture<(Int, [RedisHashFieldKey: RESPValue])> {
-        return self.send(.hscan(key, startingFrom: position, matching: match, count: count))
+        return self.send(.hscan(key, startingFrom: position, matching: match, count: count), eventLoop: eventLoop, logger: logger)
     }
 }
 

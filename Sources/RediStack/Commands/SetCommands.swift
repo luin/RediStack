@@ -2,7 +2,7 @@
 //
 // This source file is part of the RediStack open source project
 //
-// Copyright (c) 2019-2020 RediStack project authors
+// Copyright (c) 2019-2022 RediStack project authors
 // Licensed under Apache License v2.0
 //
 // See LICENSE.txt for license information
@@ -12,6 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import struct Logging.Logger
 import NIO
 
 // MARK: Sets
@@ -248,19 +249,23 @@ extension RedisCommand {
 extension RedisClient {
     /// Incrementally iterates over all values in a set.
     ///
-    /// See `RedisCommand.sscan(_:startingFrom:matching:count:)`
+    /// See ``RedisCommand/sscan(_:startingFrom:matching:count:)``
     /// - Parameters:
     ///     - key: The key of the set.
     ///     - position: The position to start the scan from.
     ///     - count: The number of elements to advance by. Redis default is 10.
     ///     - match: A glob-style pattern to filter values to be selected from the result set.
+    ///     - eventLoop: An optional event loop to hop to for any further chaining on the returned event loop future.
+    ///     - logger: An optional logger instance to use for logs generated from this command.
     /// - Returns: A `NIO.EventLoopFuture` that resolves a cursor position for additional scans, with a limited collection of values that were iterated over.
     public func scanSetValues(
         in key: RedisKey,
         startingFrom position: Int = 0,
         matching match: String? = nil,
-        count: Int? = nil
+        count: Int? = nil,
+        eventLoop: EventLoop? = nil,
+        logger: Logger? = nil
     ) -> EventLoopFuture<(Int, [RESPValue])> {
-        return self.send(.sscan(key, startingFrom: position, matching: match, count: count))
+        return self.send(.sscan(key, startingFrom: position, matching: match, count: count), eventLoop: eventLoop, logger: logger)
     }
 }
